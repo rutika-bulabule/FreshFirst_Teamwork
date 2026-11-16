@@ -1,4 +1,4 @@
-﻿# Fresh First – Database Documentation
+# Fresh First – Database Documentation
 
 ## Database Name
 freshfirst_team
@@ -84,10 +84,10 @@ Stores product activity records.
 ## Database Features
 - Primary keys and foreign keys
 - Unique constraints
-- Check constraints
-- Seven custom indexes
+- Database indexes for efficient data retrieval
 - Four triggers
-- Product verification procedure
+- Stored procedure: verify_product (expiry and storage condition verification)
+- Stored procedure: verify_product_temperature (actual temperature verification and result recording)
 - History update and delete protection
 
 ## Sample Data
@@ -104,5 +104,4 @@ The backend developer must replace them with secure password hashes before imple
 ## Team Workflow
 Database: Rutika
 Frontend: Basamma
-Backend: Shrushti
-Testing: Khushi
+Backend and Testing: Khushi
