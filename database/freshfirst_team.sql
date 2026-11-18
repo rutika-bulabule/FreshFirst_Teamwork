@@ -1,11 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
+-- FreshFirst Team Database Export
 --
 -- Host: 127.0.0.1:3306
 -- Generation Time: Nov 15, 2026 at 05:27 AM
 -- Server version: 9.1.0
--- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;

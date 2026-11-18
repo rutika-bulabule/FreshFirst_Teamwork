@@ -1,9 +1,9 @@
 # Database Testing Report – FreshFirst Team
 
-**Date:** 16 November 2026
+**Date:** 18 November 2026
 **Database:** freshfirst_team
 **DBMS:** MySQL 9.1.0
-**Environment:** WAMP and phpMyAdmin 5.2.1
+**Environment:** Windows, MySQL Server 9.1.0 and MySQL Workbench
 
 ## 1. Testing Scope
 
@@ -85,8 +85,10 @@ Apple's original quantity was verified as 30 after rollback. Temporary trigger-g
 
 ## 7. Conclusion
 
-The FreshFirst Team database was tested successfully for data integrity, stored procedure execution, trigger operations, constraint enforcement, transaction rollback, and database structure.
+The FreshFirst Team database was examined for data integrity, database structure, stored procedure logic, trigger definitions, constraints, indexes, and transaction rollback.
 
-All performed test cases produced the expected results. The database uses MySQL with the InnoDB storage engine and supports relational data integrity.
+The database contains six InnoDB tables, eight foreign keys, two unique constraints, three check constraints, four triggers, and two stored procedures. The temperature verification procedure executed successfully, and the transaction rollback test confirmed that the temporary verification record was not retained.
 
-**Overall Result: PASS**
+Further behavioural testing of trigger operations and constraint enforcement remains necessary.
+
+**Overall Result: Database structure and selected functional tests verified successfully.**
