@@ -235,3 +235,27 @@ The action audit triggers were updated to capture the database session's supplie
 **Result:** All three role tests passed.
 
 **Limitation:** Actor identification depends on the database session setting `@freshfirst_actor_user_id`. The application must set and reset this variable for each authenticated database session. The database trigger validates the supplied ID but does not independently authenticate the user.
+
+## Verification Procedure Input Validation — 18 November 2026
+
+The stored procedure `verify_product_temperature` was enhanced with explicit input validation.
+
+### Validation Tests
+
+| Test Case | Expected Result | Actual Result |
+|---|---|---|
+| Valid temperature (5°C) | SAFE | PASS |
+| Out-of-range temperature (15°C) | UNSAFE | PASS |
+| NULL temperature | Error: Temperature cannot be NULL | PASS |
+| Invalid product ID (9999) | Error: Product not found | PASS |
+| Invalid user ID (9999) | Error: User not found | PASS |
+
+### Data Integrity Verification
+
+- Invalid inputs are rejected before inserting verification records.
+- Product existence is checked before verification.
+- User existence is checked before verification.
+- The existing foreign key constraint on `verified_by` remains as an additional integrity safeguard.
+- Verification test-record cleanup query returned NULL (no matching records).
+
+**Result:** All five procedure validation tests passed.
