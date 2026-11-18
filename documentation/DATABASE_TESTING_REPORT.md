@@ -209,3 +209,29 @@ Temporary test records were removed through rollback. Remaining limitations are 
 
 **Updated Result: Database structure and the tested action lifecycle and audit controls were verified successfully.**
 
+
+## Action Audit Actor Identification Testing
+
+**Test date:** 18 November 2026
+
+The action audit triggers were updated to capture the database session's supplied user ID and validate it against the users table.
+
+### Test Results
+
+| User Role | User ID | ACTION_CREATED | STATUS_CHANGED |
+|---|---:|---|---|
+| Admin | 1 | PASS | PASS |
+| Manager | 2 | PASS | PASS |
+| Staff | 3 | PASS | PASS |
+
+### Verification
+
+- Actor IDs and usernames were correctly recorded.
+- Action creation events were recorded.
+- Status transitions from PENDING to IN_PROGRESS were recorded.
+- Temporary test transactions were rolled back.
+- Cleanup queries confirmed zero remaining test actions and audit records.
+
+**Result:** All three role tests passed.
+
+**Limitation:** Actor identification depends on the database session setting `@freshfirst_actor_user_id`. The application must set and reset this variable for each authenticated database session. The database trigger validates the supplied ID but does not independently authenticate the user.
