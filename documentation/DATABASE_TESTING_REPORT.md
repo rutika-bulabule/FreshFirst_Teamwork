@@ -130,3 +130,82 @@ The documented trigger and constraint tests passed. Additional testing of remain
 **Database testing conclusion:** Structural checks and selected functional tests were verified. Remaining limitations are recorded honestly for further work.
 
 
+
+# Database Verification Update – 18 November 2026
+
+This update supersedes the earlier database structure counts in this report.
+
+## 8. Updated Database Structure
+
+| Verification | Latest Verified Result |
+|---|---:|
+| Total tables | 7 |
+| InnoDB tables | 7 |
+| Primary keys | 7 |
+| Foreign keys | 10 |
+| Unique constraints | 2 |
+| Check constraints | 4 |
+| Triggers | 10 |
+| Stored procedures | 2 |
+| Indexes | Verified using INFORMATION_SCHEMA.STATISTICS |
+
+### Tables
+
+1. actions
+2. action_history
+3. categories
+4. history
+5. products
+6. users
+7. verifications
+
+## 9. Action Lifecycle and Audit Testing
+
+| Test | Expected Result | Actual Result | Status |
+|---|---|---|---|
+| Default action status | PENDING | PENDING | PASS |
+| Completion timestamp for PENDING | NULL | NULL | PASS |
+| Completion timestamp when marked DONE | Automatically generated | Generated | PASS |
+| Action creation audit | ACTION_CREATED event | Generated | PASS |
+| Action status-change audit | STATUS_CHANGED event | Generated | PASS |
+| Audit record update | Rejected | Error 1644 | PASS |
+| Audit record deletion | Rejected | Error 1644 | PASS |
+| Transaction rollback | Temporary records removed | Removed | PASS |
+
+## 10. Action Audit Triggers
+
+1. trg_actions_before_insert
+2. trg_actions_before_update
+3. trg_action_history_after_insert
+4. trg_action_history_after_update
+5. trg_action_history_prevent_update
+6. trg_action_history_prevent_delete
+
+The existing product and history triggers were also verified.
+
+## 11. Final Database Cleanup
+
+| Check | Result |
+|---|---:|
+| Temporary actions remaining | 0 |
+| Temporary action audit records remaining | 0 |
+| Database tables | 7 |
+| Database triggers | 10 |
+
+## 12. Remaining Limitations
+
+1. Action audit records currently have a NULL actor_user_id because the database does not yet receive the identity of the user performing each action.
+2. Existing user password values are temporary placeholders and require secure password hashes.
+3. A complete database backup restoration test remains to be demonstrated.
+4. Audit protection triggers prevent ordinary SQL updates and deletes, but privileged database administrators can still alter database objects.
+
+## 13. Updated Conclusion
+
+The FreshFirst Team database has seven InnoDB tables, ten foreign keys, two unique constraints, four check constraints, ten triggers and two stored procedures.
+
+Action lifecycle management, automatic completion timestamps, audit event generation, audit update/delete protection and transaction rollback were tested successfully.
+
+Temporary test records were removed through rollback. Remaining limitations are documented honestly.
+
+**Updated Result: Database structure and the tested action lifecycle and audit controls were verified successfully.**
+
