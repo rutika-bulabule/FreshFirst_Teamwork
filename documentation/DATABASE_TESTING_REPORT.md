@@ -259,3 +259,23 @@ The stored procedure `verify_product_temperature` was enhanced with explicit inp
 - Verification test-record cleanup query returned NULL (no matching records).
 
 **Result:** All five procedure validation tests passed.
+
+## CHECK Constraint Negative Testing — 18 November 2026
+
+Three negative tests were executed against the database.
+
+| Test Case | Expected Result | Actual Result |
+|---|---|---|
+| Set product quantity to 0 | Reject invalid quantity | PASS - Error 3819 |
+| Set minimum temperature above maximum | Reject invalid range | PASS - Error 3819 |
+| Set near-expiry days to -1 | Reject negative value | PASS - Error 3819 |
+
+### Data Preservation Verification
+
+- Fresh Milk (product_id 1) quantity remained 20.
+- Bakery temperature range remained 15–25°C.
+- Dairy temperature range remained 2–8°C.
+- Fruits temperature range remained 4–12°C.
+- Vegetables temperature range remained 4–12°C.
+
+**Result:** All three negative tests passed. Existing records remained unchanged.
