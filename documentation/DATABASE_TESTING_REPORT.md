@@ -279,3 +279,13 @@ Three negative tests were executed against the database.
 - Vegetables temperature range remained 4–12°C.
 
 **Result:** All three negative tests passed. Existing records remained unchanged.
+
+## Transaction Testing — 19 November 2026
+
+| Test Case | Expected Result | Actual Result |
+|---|---|---|
+| Update quantity to 999 and ROLLBACK | Original quantity restored | PASS - Quantity returned to 20 |
+| Update quantity to 21 and COMMIT | Updated value saved | PASS - Quantity remained 21 |
+| Restore original quantity | Quantity returned to 20 | PASS |
+
+**Result:** COMMIT and ROLLBACK operations behaved as expected. Original product data was restored.
