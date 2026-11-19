@@ -1,10 +1,11 @@
-﻿# Database Testing Report â€“ FreshFirst Team
+# Database Testing Report â€“ FreshFirst Team
 
 **Date:** 18 November 2026
 **Database:** freshfirst_team
 **DBMS:** MySQL 9.1.0
 **Environment:** Windows, MySQL Server 9.1.0 and MySQL Workbench
 
+> **Historical checkpoint:** Sections 1–7 record the database testing results from 18 November 2026. The updated database structure and final verification results are documented in the later sections dated 19 November 2026.
 ## 1. Testing Scope
 
 The database was tested for stored procedures, triggers, primary keys, foreign keys, unique constraints, check constraints, indexes, transaction rollback, and storage-engine configuration.
@@ -93,13 +94,15 @@ The documented trigger and constraint tests passed. Additional testing of remain
 
 **Overall Result: Database structure and selected functional tests verified successfully.**
 
+> **Historical update:** The remaining action lifecycle auditing and audit coverage were subsequently implemented and tested on 19 November 2026. Refer to Sections 9–13 and the later verification results below.
+
 # Gate 1 â€“ Database Testing Status
 
 ## B2 â€“ Data Integrity Rules
 
 | Rule | Verification Status |
 |---|---|
-| All six tables use InnoDB | VERIFIED |
+| All seven tables use InnoDB | VERIFIED |
 | Primary keys exist on all tables | VERIFIED |
 | Invalid foreign-key reference rejected | PASS |
 | Duplicate category name rejected | PASS |
@@ -118,20 +121,22 @@ The documented trigger and constraint tests passed. Additional testing of remain
 | Product verification | Verification and history records present |
 | History update prevention | Trigger verified |
 | History deletion prevention | Trigger verified |
-| Action assignment and completion audit | Further implementation and testing required |
+| Action assignment and completion audit | Implemented and tested – see 19 November verification |
 
 ## Remaining Database Limitations
 
-1. The actions table was empty at the recorded checkpoint.
-2. Complete action lifecycle audit coverage is not yet demonstrated.
-3. Existing password values are temporary placeholders and require secure hashing.
-4. A complete restore test remains to be demonstrated.
+The action lifecycle and audit coverage were tested successfully on 19 November 2026.
+
+1. Existing password values are temporary placeholders and require secure password hashing.
+2. A complete database backup restoration test remains pending.
+3. Actor attribution depends on the application setting and controlling the database session variable for each authenticated session.
+4. Physical stock quantities require staff to perform physical stock counts; the database cannot independently verify actual stock.
 
 **Database testing conclusion:** Structural checks and selected functional tests were verified. Remaining limitations are recorded honestly for further work.
 
 
 
-# Database Verification Update – 18 November 2026
+# Database Verification Update – 19 November 2026
 
 This update supersedes the earlier database structure counts in this report.
 
@@ -194,7 +199,7 @@ The existing product and history triggers were also verified.
 
 ## 12. Remaining Limitations
 
-1. Action audit records currently have a NULL actor_user_id because the database does not yet receive the identity of the user performing each action.
+1. Actor attribution depends on the application setting the database session variable @freshfirst_actor_user_id for each authenticated session. The database validates the supplied user ID but does not independently authenticate the user.
 2. Existing user password values are temporary placeholders and require secure password hashes.
 3. A complete database backup restoration test remains to be demonstrated.
 4. Audit protection triggers prevent ordinary SQL updates and deletes, but privileged database administrators can still alter database objects.
@@ -212,7 +217,7 @@ Temporary test records were removed through rollback. Remaining limitations are 
 
 ## Action Audit Actor Identification Testing
 
-**Test date:** 18 November 2026
+**Test date:** 19 November 2026
 
 The action audit triggers were updated to capture the database session's supplied user ID and validate it against the users table.
 
@@ -306,3 +311,149 @@ Three negative tests were executed against the database.
 | Original products | 5 | 5 | PASS |
 
 **Result:** Final database structure and data integrity verification completed successfully.
+
+## Expiry-Date Calculation Testing — 19 November 2026
+
+A read-only SQL query using `DATEDIFF()` and `CASE` was executed to calculate the number of days remaining and identify expired products.
+
+| Product | Expiry Date | Days Remaining | Expected Status | Actual Status |
+|---|---|---:|---|---|
+| Fresh Milk | 2026-11-20 | 1 | NOT EXPIRED | NOT EXPIRED |
+| Apple | 2026-11-22 | 3 | NOT EXPIRED | NOT EXPIRED |
+| Banana | 2026-11-17 | -2 | EXPIRED | EXPIRED |
+| Carrot | 2026-11-25 | 6 | NOT EXPIRED | NOT EXPIRED |
+| Bread | 2026-11-18 | -1 | EXPIRED | EXPIRED |
+
+**Result:** All five expiry calculations and status classifications matched the expected results. No product records were modified.
+
+**Test limitation:** This test verifies direct SQL expiry calculation. It does not independently establish that the `verify_product` stored procedure performs the same calculation.
+
+## Database Reporting Query Testing — 19 November 2026
+
+Three read-only reporting queries were executed successfully.
+
+| Test | Verification | Result |
+|---|---|---|
+| Product stock report | Displayed five products with category, quantity, unit, expiry date and storage temperature | PASS |
+| Category summary report | Displayed product counts, total quantities, expired products and near-expiry products for four categories | PASS |
+| Action status report | Query executed successfully, but returned no rows because the actions table contained zero records | PASS – QUERY EXECUTED |
+
+**Limitation:** Action status report output with actual action records has not yet been demonstrated. No test records were inserted.
+
+**Result:** Product stock and category summary reports returned the expected data. All three reporting queries executed without SQL errors.
+
+## Duplicate Username Constraint Testing — 19 November 2026
+
+The `users` table definition was inspected and confirmed to contain a UNIQUE constraint on `username`.
+
+A duplicate insert using the existing username `admin` was attempted within a transaction.
+
+| Test | Expected Result | Actual Result |
+|---|---|---|
+| Insert a second user with username `admin` | Reject duplicate username | Error 1062: Duplicate entry 'admin' for key 'users.username' |
+| Check user count after ROLLBACK | Remain at 3 | 3 users |
+
+**Result:** Duplicate username insertion was rejected and the original three user records remained unchanged.
+
+## User Account and Role Verification — 19 November 2026
+
+A read-only query was executed to verify the existing user accounts and assigned roles.
+
+| User ID | Username | Role |
+|---:|---|---|
+| 1 | admin | ADMIN |
+| 2 | manager1 | MANAGER |
+| 3 | staff1 | STAFF |
+
+**Result:** All three user records and their assigned roles were returned successfully.
+
+**Limitation:** This test verifies existing account and role records only. User creation, login authentication and role modification were not tested here.
+
+## Backup Restoration Verification — 19 November 2026
+
+The database backup was successfully restored into a separate test database named `freshfirst_team_restore_test`.
+
+| Restored table | Record count |
+|---|---:|
+| users | 3 |
+| products | 5 |
+| categories | 4 |
+| actions | 0 |
+| action_history | 0 |
+| history | 5 |
+| verifications | 1 |
+
+**Result:** All seven tables were restored and their records were accessible. The original `freshfirst_team` database was kept separate and was not selected as the restoration target.
+
+**Status: PASS**
+
+**Additional restoration verification:**
+- 10 triggers restored successfully.
+- 2 stored procedures restored successfully.
+- No restoration errors were reported.
+
+**Final restoration result: PASS**
+
+## Gate 1 – B2: Negative Database Integrity Testing
+**Date:** 19 November 2026
+
+| Test | Invalid operation | Expected result | Actual result |
+|---|---|---|---|
+| B2-T01 | Update product quantity to -1 | Database rejects negative stock quantity | PASS - Rejected |
+| B2-T02 | Update product category to invalid ID 999999 | Foreign key rejects invalid category reference | PASS - Rejected |
+
+**Execution:** Both tests were executed inside a transaction and rolled back.
+
+**Result:** Both invalid operations were rejected. Original product records were protected. No invalid data was committed.
+
+**Overall status: PASS**
+
+## Gate 1 – B3: Audit Trail Acceptance Testing
+**Date:** 19 November 2026
+
+| Test | Expected result | Actual result |
+|---|---|---|
+| B3-T01 – Product quantity update | Update creates an audit history record | PASS |
+| B3-T02 – Actor attribution | Audit record stores the actor user ID | PASS |
+| B3-T03 – Activity details | Audit record stores activity type and product details | PASS |
+| B3-T04 – Timestamp | Audit record stores the event timestamp | PASS |
+
+**Observed evidence:**
+- History ID: 10
+- Actor user ID: 1
+- Event type: PRODUCT UPDATED
+- Event details: Product updated: Fresh Milk, Quantity: 21
+- Event timestamp: 2026-11-19 18:11:45
+
+**Result:** The product update trigger generated an audit history record with actor, activity details and timestamp. The test transaction was rolled back.
+
+**Overall status: PASS for the tested product-update audit event.**
+
+## Gate 1 – B3: Audit History Protection Testing
+**Date:** 19 November 2026
+
+| Test | Expected result | Actual result |
+|---|---|---|
+| B3-T05 – Update audit history | Database blocks audit history updates | PASS - Update blocked |
+| B3-T06 – Delete audit history | Database blocks audit history deletion | PASS - Delete blocked |
+
+**Result:** Audit history protection triggers successfully prevented both update and delete operations.
+
+**Overall status:** PASS for the tested audit history protections.
+
+## Gate 1 – DB-FR-10: Action Reporting Test
+**Date:** 19 November 2026
+
+| Test data | Expected result | Actual result |
+|---|---|---|
+| Temporary inspection action | Action report displays action type, priority, status and description | PASS |
+
+**Observed result:**
+- Action type: INSPECTION
+- Priority: HIGH
+- Status: PENDING
+- Description: Temporary Gate 1 action reporting test
+
+**Execution:** Temporary action inserted inside a transaction and rolled back.
+
+**Result:** Action reporting successfully returned the expected record. No test record was retained.
