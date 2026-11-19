@@ -204,7 +204,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 | Requirement ID | Requirement | Database Component | Testing Evidence | Status |
 |---|---|---|---|---|
-| DB-FR-01 | Store user accounts and roles | users | DATABASE_TESTING_REPORT – User Account and Role Verification; Actor Identification Testing | PARTIAL |
+| DB-FR-01 | Store user accounts and roles | users | Three unique usernames and ADMIN, MANAGER, STAFF roles verified; password hashes are temporary placeholders and application authentication remains pending | PARTIAL |
 | DB-FR-02 | Maintain product records | products | Sections 3, 5 and Final Database Integrity Verification | PASS |
 | DB-FR-03 | Maintain product-category relationships | products, categories, foreign keys | Section 4 – Constraint Testing | PASS |
 | DB-FR-04 | Support product insertion and permitted updates | products, product triggers | Section 3 – Trigger Testing | PASS |
@@ -474,7 +474,7 @@ The following transaction types define the expected effect on stock quantity.
 
 | Requirement | Current status | Evidence / remaining limitation |
 |---|---|---|
-| DB-FR-01 – User management | PARTIAL | Three user roles verified; complete database-level authentication testing remains pending. |
+| DB-FR-01 – User management | PARTIAL | Three unique usernames and all three valid roles verified. Password values are temporary placeholders; secure password hashing and application authentication testing remain pending. |
 | DB-FR-02 to DB-FR-09 | PASS | Database structures, integrity rules, verification and action mechanisms documented and tested. |
 | DB-FR-10 – Reporting | PASS | Product, category and action reporting tested. Temporary action reporting test returned the expected record and was rolled back. |
 | DB-FR-11 to DB-FR-12 | PASS | Existing database requirement evidence retained. |
@@ -501,7 +501,7 @@ This final status supersedes earlier historical checkpoints in this document.
 
 | Requirement | Final status | Reason |
 |---|---|---|
-| DB-FR-01 – User management and authentication | PARTIAL | User roles and uniqueness verified; complete application authentication testing remains pending. |
+| DB-FR-01 – User management and authentication | PARTIAL | Three unique usernames, three valid roles and password_hash VARCHAR(255) verified. All three password values are temporary placeholders; secure password hashing and application authentication testing remain pending. |
 | DB-FR-10 – Reporting | PASS | Product, category and action reporting queries tested successfully. |
 | DB-NFR-05 – Audit attribution | PASS WITH LIMITATION | Actor attribution depends on the application setting the database session variable. |
 | DB-NFR-06 – Backup and recovery | PASS | Backup restored successfully into a separate test schema. |
