@@ -512,3 +512,19 @@ All other database requirements retain their previously documented verified stat
 **Gate 1 database evidence review:** Completed for the tests recorded in this documentation.
 
 **Faculty decision and approval:** Pending faculty review.
+
+
+## Gate 1 – DB-NFR-07: Final Query Index Verification
+
+The following four query execution plans were checked using MySQL EXPLAIN.
+
+| Table | Filter condition | Index used | Access type | Result |
+|---|---|---|---|---|
+| products | category_id = 1 | idx_products_category | ref | PASS |
+| verifications | product_id = 1 | idx_verifications_product | ref | PASS |
+| history | product_id = 1 | product_id | ref | PASS |
+| actions | action_status = 'PENDING' | idx_actions_status | ref | PASS |
+
+**Evidence result:** All four tested queries used indexes.
+
+**Limitation:** DB-NFR-07 remains PARTIAL because a formal faculty-approved query response-time target has not yet been established. Index usage alone does not establish that a response-time target has been met.

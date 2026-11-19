@@ -457,3 +457,19 @@ The database backup was successfully restored into a separate test database name
 **Execution:** Temporary action inserted inside a transaction and rolled back.
 
 **Result:** Action reporting successfully returned the expected record. No test record was retained.
+
+
+## Gate 1 – DB-NFR-07: Final Query Index Verification
+
+The following four query execution plans were checked using MySQL EXPLAIN.
+
+| Table | Filter condition | Index used | Access type | Result |
+|---|---|---|---|---|
+| products | category_id = 1 | idx_products_category | ref | PASS |
+| verifications | product_id = 1 | idx_verifications_product | ref | PASS |
+| history | product_id = 1 | product_id | ref | PASS |
+| actions | action_status = 'PENDING' | idx_actions_status | ref | PASS |
+
+**Evidence result:** All four tested queries used indexes.
+
+**Limitation:** DB-NFR-07 remains PARTIAL because a formal faculty-approved query response-time target has not yet been established. Index usage alone does not establish that a response-time target has been met.
