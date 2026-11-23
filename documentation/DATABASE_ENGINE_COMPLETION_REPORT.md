@@ -1,7 +1,7 @@
 # FreshFirst Team – Database Engine Completion Report
 
-**Project:** Perishable Stock Verification Register
-**Engine:** Database / Data & Integrity
+**Project:** Perishable Stock Verification Register  
+**Engine:** Database / Data & Integrity  
 **Responsible Member:** Rutika
 
 ## 1. Completed Database Work
@@ -18,7 +18,8 @@
 | Stored procedures | Two procedures | PASS |
 | Verification | Expiry and temperature verification | PASS |
 | Audit history | History protection and audit testing | PASS |
-| Reporting | Product, category and action reports | PASS |
+| Product and category reporting | Queries executed and results reviewed | PASS |
+| Action reporting | Temporary inspection action displayed correctly and transaction rolled back | PASS |
 | Backup and recovery | Separate-schema restoration test | PASS |
 | Query plans | Four queries checked using EXPLAIN | PASS |
 
@@ -35,16 +36,44 @@
 
 ## 3. Pending Work
 
-1. Secure password hashes and application authentication testing remain pending with the backend implementation.
+1. Secure password hashes for ADMIN, MANAGER and STAFF have been generated using Werkzeug scrypt and verified. Full application login integration testing remains pending.
 2. A faculty-approved response-time target is required before completing DB-NFR-07 performance testing.
-3. The official Gate 1 register must be updated when its original document is available.
+3. The official Gate 1 register requires a coordinated update after the database review. Gate documents are not modified as part of this report update.
 
 ## 4. GitHub Submission
 
-Database documentation, SQL files, testing evidence and handover files have been pushed to the main branch.
+Database documentation, SQL files, testing evidence and handover files have been included in the project repository.
 
-Latest commit: f783483
+The repository history should be preserved during final submission preparation.
 
 ## 5. Conclusion
 
-The database structure, integrity constraints, triggers, stored procedures, audit mechanisms, reporting queries and backup restoration have been implemented and tested. The remaining partial requirements are documented for further application-level testing and faculty confirmation.
+The database structure, integrity constraints, triggers, stored procedures, audit mechanisms, reporting queries and backup restoration have been implemented and tested.
+
+Product and category reporting queries were executed and their results reviewed. Action reporting was also tested successfully using a temporary inspection action. The expected action details were returned, and the test transaction was rolled back so that no temporary record was retained.
+
+Secure password hashing and Werkzeug verification are complete. Full application login integration testing and final performance benchmarking remain pending.
+
+**Overall Status:** The database structure and major integrity, reporting and recovery tests are completed. Remaining partial requirements are recorded honestly for further validation.
+
+# Database Completion Update – 22 November 2026
+
+## 1. Secure Password Hashing
+- Password hashes for ADMIN, MANAGER and STAFF accounts were generated using Werkzeug scrypt.
+- Hashes were successfully saved in the `freshfirst_team` database.
+- All three passwords passed Werkzeug `check_password_hash()` verification.
+- Application login integration testing remains a separate validation step.
+
+## 2. Category Image Path Support
+- Added `image_path VARCHAR(255) NULL` to the `categories` table.
+- Saved relative image paths for all four existing categories:
+  - Bakery: `images/categories/bakery.jpg`
+  - Dairy: `images/categories/dairy.jpg`
+  - Fruits: `images/categories/fruits.jpg`
+  - Vegetables: `images/categories/vegetables.jpg`
+- Existing category records, temperature rules and expiry settings were preserved.
+- Actual image files and frontend display integration remain pending with the frontend team.
+
+## Git Submission Status - 23 November 2026
+
+Database documentation and supporting SQL files are undergoing final review in the local project repository. Final staging, commit and push are pending. Private backups and password-generation or verification scripts are excluded from the submission.

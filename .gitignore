@@ -1,0 +1,8 @@
+# Private password-generation files - never commit
+database/set_user_password_hashes.sql
+generate_password_hashes.py
+verify_password_hashes.py
+# Private database backups - never commit
+database/freshfirst_team_private_backup_*.sql
+
+database/freshfirst_team_schema_only.sql

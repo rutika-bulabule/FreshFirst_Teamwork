@@ -109,7 +109,7 @@ Stores action creation and status-change audit records.
 - 1 history record
 
 ## Important Note
-The sample password_hash values are temporary placeholders.
+Secure Werkzeug scrypt password hashes are stored for all three user accounts as of 22 November 2026.
 The backend developer must replace them with secure password hashes before implementing login.
 
 ## Team Workflow
@@ -204,7 +204,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 | Requirement ID | Requirement | Database Component | Testing Evidence | Status |
 |---|---|---|---|---|
-| DB-FR-01 | Store user accounts and roles | users | Three unique usernames and ADMIN, MANAGER, STAFF roles verified; password hashes are temporary placeholders and application authentication remains pending | PARTIAL |
+| DB-FR-01 | Store user accounts and roles | users | Three unique usernames and ADMIN, MANAGER, STAFF roles verified; secure password hashes are stored for all three accounts; application login integration testing remains pending | PARTIAL |
 | DB-FR-02 | Maintain product records | products | Sections 3, 5 and Final Database Integrity Verification | PASS |
 | DB-FR-03 | Maintain product-category relationships | products, categories, foreign keys | Section 4 – Constraint Testing | PASS |
 | DB-FR-04 | Support product insertion and permitted updates | products, product triggers | Section 3 – Trigger Testing | PASS |
@@ -305,13 +305,13 @@ The temperature verification procedure executed successfully. A rollback test co
 
 At the 18 November 2026 checkpoint, the actions table was empty, so a complete saved action lifecycle could not yet be demonstrated. Action lifecycle testing was completed and documented in the subsequent 19 November 2026 verification.
 
-The three existing password values are temporary placeholders, not secure password hashes. Secure password hashing must be completed before login is considered production-ready.
+At the 19 November 2026 checkpoint, the password values were temporary placeholders. This was updated on 22 November 2026: secure Werkzeug scrypt password hashes were saved for all three user accounts and verified using check_password_hash(). Application login integration testing remains pending.
 
 ## Database Conclusion
 
 The FreshFirst Team database provides a relational foundation for perishable stock verification. Its seven InnoDB tables, ten foreign keys, two unique constraints, four CHECK constraints, ten triggers and two stored procedures support database integrity and traceability.
 
-Selected structural, functional and transaction tests have been documented. Action lifecycle auditing and its tested controls are documented in the 19 November 2026 verification. Remaining work includes secure password storage, backup restoration testing and further application-level transaction testing.
+Selected structural, functional and transaction tests have been documented. Action lifecycle auditing and its tested controls are documented in the 19 November 2026 verification. Secure password storage was completed and verified on 22 November 2026. Backup restoration was successfully tested on 19 November 2026. Remaining work includes application login integration and further application-level transaction testing.
 
 
 ## Latest Database Verification — 19 November 2026
@@ -373,7 +373,7 @@ COMMIT and ROLLBACK operations were tested successfully on 19 November 2026. The
 
 ### Remaining Limitations
 
-- User password values are temporary placeholders and must be replaced with secure password hashes before production use.
+- Secure password hashes are stored for all three user accounts. Full application login integration testing remains pending.
 - The database cannot independently verify physical stock quantities without staff physically counting stock.
 - The actor session variable used for action auditing must be controlled by the authenticated application; it is not independent authentication.
 - Further testing is required for complete application-level transaction workflows.
@@ -474,7 +474,7 @@ The following transaction types define the expected effect on stock quantity.
 
 | Requirement | Current status | Evidence / remaining limitation |
 |---|---|---|
-| DB-FR-01 – User management | PARTIAL | Three unique usernames and all three valid roles verified. Password values are temporary placeholders; secure password hashing and application authentication testing remain pending. |
+| DB-FR-01 – User management | PARTIAL | Three unique usernames and all three valid roles verified. Secure password hashes are stored for all three accounts; application login integration testing remains pending. |
 | DB-FR-02 to DB-FR-09 | PASS | Database structures, integrity rules, verification and action mechanisms documented and tested. |
 | DB-FR-10 – Reporting | PASS | Product, category and action reporting tested. Temporary action reporting test returned the expected record and was rolled back. |
 | DB-FR-11 to DB-FR-12 | PASS | Existing database requirement evidence retained. |
@@ -501,7 +501,7 @@ This final status supersedes earlier historical checkpoints in this document.
 
 | Requirement | Final status | Reason |
 |---|---|---|
-| DB-FR-01 – User management and authentication | PARTIAL | Three unique usernames, three valid roles and password_hash VARCHAR(255) verified. All three password values are temporary placeholders; secure password hashing and application authentication testing remain pending. |
+| DB-FR-01 – User management and authentication | PARTIAL | Three unique usernames, three valid roles and password_hash VARCHAR(255) verified. Secure password hashes are stored for all three accounts; application login integration testing remains pending. |
 | DB-FR-10 – Reporting | PASS | Product, category and action reporting queries tested successfully. |
 | DB-NFR-05 – Audit attribution | PASS WITH LIMITATION | Actor attribution depends on the application setting the database session variable. |
 | DB-NFR-06 – Backup and recovery | PASS | Backup restored successfully into a separate test schema. |
@@ -528,3 +528,11 @@ The following four query execution plans were checked using MySQL EXPLAIN.
 **Evidence result:** All four tested queries used indexes.
 
 **Limitation:** DB-NFR-07 remains PARTIAL because a formal faculty-approved query response-time target has not yet been established. Index usage alone does not establish that a response-time target has been met.
+
+## Current Database Status Update - 23 November 2026
+
+- Secure Werkzeug scrypt password hashes were generated and verified for all three database accounts on 22 November 2026.
+- Application login integration remains pending.
+- Separate-database restoration testing was completed on 23 November 2026.
+- Actor attribution depends on the application setting the database session variable.
+- The faculty-approved query response-time target remains pending.
