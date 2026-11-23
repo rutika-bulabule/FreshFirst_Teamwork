@@ -48,8 +48,9 @@ These must not be presented as implemented stock transactions without correspond
 
 Existing database testing documentation confirms product insertion, quantity updates, transaction safety, verification procedures, and corrective-action audit testing.
 
-A separate decrease-only test and a complete application-level transaction workflow have not been independently established by this document.
+A separate decrease-only test is now documented in DATABASE_TESTING_REPORT.md. A complete application-level transaction workflow has not yet been independently established.
 
 **B1 transaction types and balance effects: Documented.**
 
 **Remaining evidence limitations: Recorded honestly for review.**
+

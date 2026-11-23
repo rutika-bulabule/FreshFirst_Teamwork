@@ -397,3 +397,14 @@ This update records work completed after the earlier testing checkpoints.
 - Physical stock quantities require staff verification.
 
 This update supersedes earlier checkpoint statements where they conflict with the current status above. Historical test results remain unchanged.
+
+## 13. Separate Stock Quantity Decrease Test
+
+| Test | Expected Result | Actual Result | Status |
+|---|---|---|---|
+| Original Fresh Milk quantity | 20 | 20 | PASS |
+| Decrease quantity by 5 | 15 | 15 | PASS |
+| Execute ROLLBACK | Restore quantity to 20 | 20 | PASS |
+
+The decrease-only quantity test was performed inside an InnoDB transaction. The temporary decrease from 20 to 15 was successfully rolled back, restoring the original quantity of 20.
+
