@@ -24,16 +24,27 @@ This document defines what the audit trail must record for database activities a
 
 ## 3. Audit Information to Be Recorded
 
-The product history evidence identifies these important fields:
+### Product History (`history`)
 
-- history_id – unique audit record identifier.
-- product_id – affected product.
-- user_id – actor responsible for the activity.
-- action_type – type of activity.
-- details – description of the activity.
-- created_at – event timestamp.
+- `history_id` – unique audit record identifier.
+- `product_id` – affected product.
+- `user_id` – actor responsible for the activity.
+- `activity` – type of activity performed.
+- `details` – description of the activity.
+- `activity_time` – event timestamp.
 
-The action audit trail is maintained separately through action_history.
+### Action History (`action_history`)
+
+- `action_history_id` – unique action audit record identifier.
+- `action_id` – related corrective action.
+- `actor_user_id` – user responsible for the event; this field permits NULL.
+- `event_type` – type of action event.
+- `old_status` – previous action status.
+- `new_status` – new action status.
+- `event_details` – description of the event.
+- `event_at` – event timestamp.
+
+The action audit record identifies its related product through the `action_id` relationship to the `actions` table.
 
 ## 4. Existing Database Enforcement
 
