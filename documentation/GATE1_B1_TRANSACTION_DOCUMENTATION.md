@@ -15,7 +15,7 @@ This document lists the stock-related transaction types identified in the curren
 |---|---|---|---|
 | B1-T01 | Add a product | Creates a product with its initial quantity. | Product insertion and rollback tests documented. |
 | B1-T02 | Increase quantity | Increases the recorded quantity. | Quantity update and COMMIT test documented. |
-| B1-T03 | Decrease quantity | Decreases the recorded quantity. | Quantity update testing documented; separate decrease test not identified. |
+| B1-T03 | Decrease quantity | Decreases the recorded quantity. | Separate decrease-only test documented in DATABASE_TESTING_REPORT.md, Section 13; quantity decreased from 20 to 15 and ROLLBACK restored 20 (PASS). |
 | B1-T04 | Correct quantity | Replaces an incorrect quantity with the corrected value. | Quantity restoration and ROLLBACK tests documented. |
 | B1-T05 | Verify product | Does not directly change product quantity; creates verification records. | Stored procedure and verification tests documented. |
 | B1-T06 | Assign or complete corrective action | Action status and audit records change; no automatic quantity change is established by the action record alone. | Action lifecycle and audit tests documented. |
