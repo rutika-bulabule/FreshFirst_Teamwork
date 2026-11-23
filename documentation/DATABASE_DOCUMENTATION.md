@@ -463,14 +463,14 @@ The following criteria define the expected database behaviour for each functiona
 
 | Stakeholder need | Requirement | Database evidence |
 |---|---|---|
-| Secure user management | FR-01 | users table, unique username constraint and role records |
-| Product management | FR-02 to FR-04 | products table, category foreign key and integrity constraints |
-| Stock verification | FR-05 to FR-07 | verifications table and verification procedures |
-| Priority and action management | FR-08 | actions table, priority and status constraints, action triggers |
-| Product activity history | FR-09 | history table and product activity triggers |
-| Reporting | FR-10 | Product stock, category summary and action reporting queries |
-| Audit history protection | FR-11 | History protection triggers preventing normal update and deletion |
-| Database consistency | FR-12 | InnoDB, foreign keys, CHECK constraints and transaction testing |
+| Secure user management | DB-FR-01 | users table, unique username constraint and role records |
+| Product management | DB-FR-02 to DB-FR-04 | products table, category foreign key and integrity constraints |
+| Stock verification | DB-FR-05 to DB-FR-07 | verifications table and verification procedures |
+| Priority and action management | DB-FR-08 | actions table, priority and status constraints, action triggers |
+| Product activity history | DB-FR-09 | history table and product activity triggers |
+| Reporting | DB-FR-10 | Product stock, category summary and action reporting queries |
+| Audit history protection | DB-FR-11 | History protection triggers preventing normal update and deletion |
+| Database consistency | DB-FR-12 | InnoDB, foreign keys, CHECK constraints and transaction testing |
 
 **Limitation:** Database evidence establishes the data structures and integrity mechanisms. Complete user-interface and application-level acceptance must be verified during integration.
 
