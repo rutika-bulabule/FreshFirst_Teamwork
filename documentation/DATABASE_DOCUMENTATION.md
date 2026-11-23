@@ -441,18 +441,24 @@ The following transaction types define the expected effect on stock quantity.
 
 ## Gate 1 – A3: Database Acceptance Criteria
 
-| Requirement | Acceptance criterion | Evidence |
-|---|---|---|
-| User records | Username must be unique and role must be valid. | Unique constraint and role verification |
-| Product records | Product must reference a valid category and have valid quantity. | Foreign keys and CHECK constraints |
-| Expiry verification | Expiry status must be calculated correctly from the expiry date. | Expiry calculation tests |
-| Temperature verification | Storage temperature must be checked against category limits. | Verification procedure tests |
-| Action records | Action status and completion timestamp must remain consistent. | CHECK constraint and trigger tests |
-| History records | Audit history must not be updated or deleted through normal database operations. | History protection trigger tests |
-| Backup | Database backup must restore tables, records, triggers and procedures. | Restoration test |
+The following criteria define the expected database behaviour for each functional requirement. Status reflects the available database evidence; application-level integration is assessed separately.
 
-**Result:** Database acceptance criteria are defined. Application-level authentication and complete end-to-end workflows require separate application testing.
+| Requirement | Acceptance criterion | Testing method / Evidence | Status |
+|---|---|---|---|
+| DB-FR-01 – User accounts and roles | Each username must be unique. Each account must have a valid role, and passwords must be stored as secure hashes rather than plain text. | Unique constraint, role records and password-hash verification. Application login integration remains pending. | PARTIAL |
+| DB-FR-02 – Product records | Product records must store the required product information and maintain valid product data. | Product table inspection, product insertion and record verification tests. | PASS |
+| DB-FR-03 – Product-category relationships | Every product must reference an existing category. Invalid category references must be rejected. | Foreign-key constraint inspection and integrity testing. | PASS |
+| DB-FR-04 – Product insertion and updates | Valid products must be insertable, and permitted quantity updates must preserve database consistency. Invalid quantities must be rejected. | Product insertion, quantity update, CHECK constraint and transaction tests. | PASS |
+| DB-FR-05 – Expiry-date calculations | Expiry status must be calculated correctly using the product expiry date and current date. | DATEDIFF and expiry-status calculation tests for the stored products. | PASS |
+| DB-FR-06 – Temperature verification | A product's recorded storage temperature must be evaluated against its category's permitted temperature limits. | Temperature verification procedure tests, including valid and invalid temperature cases. | PASS |
+| DB-FR-07 – Verification records | Each verification record must reference an existing product and valid verifying user. | Verification procedure tests and foreign-key checks. | PASS |
+| DB-FR-08 – Follow-up actions | Actions must reference valid products and assigned users. Action status and completion timestamp must remain consistent. | Action lifecycle tests, foreign-key checks, CHECK constraints and trigger inspection. | PASS |
+| DB-FR-09 – Product activity history | Auditable product changes must generate history records containing the relevant activity details, actor and timestamp. | Product update trigger test and recorded audit-history evidence. | PASS |
+| DB-FR-10 – Reports and integrity checks | Database queries must return the expected product stock, category summary and action reporting results. | Product stock, category summary and temporary action reporting tests. | PASS |
+| DB-FR-11 – History protection | Normal database operations must not allow protected history records to be updated or deleted. | History protection trigger tests for UPDATE and DELETE. | PASS |
+| DB-FR-12 – Database consistency | Foreign keys, CHECK constraints, unique constraints and transactions must preserve valid database relationships and prevent invalid data. | Constraint tests, InnoDB verification and COMMIT/ROLLBACK tests. | PASS |
 
+**A3 Result:** Acceptance criteria are explicitly defined for all 12 database functional requirements. DB-FR-01 remains PARTIAL because application login integration testing is pending. Complete application-level workflows require separate integration testing.
 ## Gate 1 – A5: Database Requirement Traceability
 
 | Stakeholder need | Requirement | Database evidence |
