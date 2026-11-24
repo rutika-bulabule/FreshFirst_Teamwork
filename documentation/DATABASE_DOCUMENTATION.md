@@ -161,7 +161,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 | DB-FR-07 | Store verification records linked to products and users. |
 | DB-FR-08 | Store follow-up actions, priorities and statuses. |
 | DB-FR-09 | Maintain product activity history. |
-| DB-FR-10 | Support database reports and integrity checks | Database queries, indexes and integrity checks | Product stock, category summary and temporary action reporting tests returned expected results | PASS |
+| DB-FR-10 | Support database reports and integrity checks. |
 | DB-FR-11 | Protect history against normal update and deletion. |
 | DB-FR-12 | Maintain consistency using constraints and transactions. |
 
@@ -260,7 +260,7 @@ These are required business rules; they do not mean every transaction type has a
 Each auditable operation should record:
 - Unique history ID.
 - Related product ID.
-- Acting user ID.
+- Acting user ID, where available.
 - Activity or transaction type.
 - Relevant details.
 - Activity timestamp.
