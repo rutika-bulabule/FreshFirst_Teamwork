@@ -242,8 +242,8 @@ The stored procedure `verify_product_temperature` was enhanced with explicit inp
 
 | Test Case | Expected Result | Actual Result |
 |---|---|---|
-| Valid temperature (5┬░C) | SAFE | PASS |
-| Out-of-range temperature (15┬░C) | UNSAFE | PASS |
+| Valid temperature (5°C) | SAFE | PASS |
+| Out-of-range temperature (15°C) | UNSAFE | PASS |
 | NULL temperature | Error: Temperature cannot be NULL | PASS |
 | Invalid product ID (9999) | Error: Product not found | PASS |
 | Invalid user ID (9999) | Error: User not found | PASS |
@@ -271,10 +271,10 @@ Three negative tests were executed against the database.
 ### Data Preservation Verification
 
 - Fresh Milk (product_id 1) quantity remained 20.
-- Bakery temperature range remained 15ΓÇô25┬░C.
-- Dairy temperature range remained 2ΓÇô8┬░C.
-- Fruits temperature range remained 4ΓÇô12┬░C.
-- Vegetables temperature range remained 4ΓÇô12┬░C.
+- Bakery temperature range remained 15–25°C.
+- Dairy temperature range remained 2–8°C.
+- Fruits temperature range remained 4–12°C.
+- Vegetables temperature range remained 4–12°C.
 
 **Result:** All three negative tests passed. Existing records remained unchanged.
 
@@ -329,7 +329,7 @@ Three read-only reporting queries were executed successfully.
 |---|---|---|
 | Product stock report | Displayed five products with category, quantity, unit, expiry date and storage temperature | PASS |
 | Category summary report | Displayed product counts, total quantities, expired products and near-expiry products for four categories | PASS |
-| Action status report | Query executed successfully, but returned no rows because the actions table contained zero records | PASS ΓÇô QUERY EXECUTED |
+| Action status report | Query executed successfully, but returned no rows because the actions table contained zero records | PASS – QUERY EXECUTED |
 
 **Limitation:** Action status report output with actual action records has not yet been demonstrated. No test records were inserted.
 
@@ -450,4 +450,57 @@ A new `stock_movements` table and the `trg_stock_movement_after_update` trigger 
 **Overall Result:** Stock Movement Log testing PASSED for both stock increases and decreases.
 
 **Implementation Note:** Accurate actor attribution and movement reasons depend on the application setting the database session variables `@freshfirst_actor_user_id` and `@freshfirst_movement_reason`.
+
+
+## 15. Full Database Export and Restoration Verification – 26 November 2026
+
+### Restoration Test
+
+A fresh export of the live `freshfirst_team` database was created. The separate restore-test export was imported into `freshfirst_team_export_test` without replacing the original database.
+
+### Structure Verification
+
+| Database Object | Original | Restored | Result |
+|---|---:|---:|---|
+| Tables | 8 | 8 | PASS |
+| Triggers | 11 | 11 | PASS |
+| Stored procedures | 2 | 2 | PASS |
+| Foreign keys | 12 | 12 | PASS |
+
+### Exact Record Count Verification
+
+| Table | Original | Restored | Result |
+|---|---:|---:|---|
+| users | 3 | 3 | PASS |
+| categories | 4 | 4 | PASS |
+| products | 5 | 5 | PASS |
+| verifications | 1 | 1 | PASS |
+| history | 8 | 8 | PASS |
+| actions | 0 | 0 | PASS |
+| action_history | 0 | 0 | PASS |
+| stock_movements | 2 | 2 | PASS |
+| **Total** | **23** | **23** | **PASS** |
+
+### CHECKSUM TABLE Verification
+
+MySQL `CHECKSUM TABLE` was executed on each original table and its restored counterpart.
+
+| Table | Original Checksum | Restored Checksum | Result |
+|---|---:|---:|---|
+| users | 2856713368 | 2856713368 | PASS |
+| categories | 3062671548 | 3062671548 | PASS |
+| products | 2379279870 | 2379279870 | PASS |
+| verifications | 1728641103 | 1728641103 | PASS |
+| history | 454454446 | 454454446 | PASS |
+| actions | 0 | 0 | PASS |
+| action_history | 0 | 0 | PASS |
+| stock_movements | 2243825426 | 2243825426 | PASS |
+
+### Result
+
+All eight table checksums matched. Table counts, record counts, trigger counts, procedure counts and foreign-key counts also matched.
+
+**Overall Result: PASS – The database export and separate restoration test completed successfully.**
+
+The test confirms matching table data and reported structure counts. It does not independently verify the complete textual definitions of every database object.
 
