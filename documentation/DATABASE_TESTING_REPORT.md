@@ -408,3 +408,46 @@ This update supersedes earlier checkpoint statements where they conflict with th
 
 The decrease-only quantity test was performed inside an InnoDB transaction. The temporary decrease from 20 to 15 was successfully rolled back, restoring the original quantity of 20.
 
+
+## 14. Stock Movement Log Testing – 26 November 2026
+
+A new `stock_movements` table and the `trg_stock_movement_after_update` trigger were implemented to automatically record product quantity changes.
+
+### STOCK_IN Test
+
+| Field | Actual Result | Status |
+|---|---|---|
+| Product | Fresh Milk (ID 1) | PASS |
+| Previous quantity | 20 | PASS |
+| New quantity | 21 | PASS |
+| Quantity change | +1 | PASS |
+| Movement type | STOCK_IN | PASS |
+| Changed by | User ID 1 | PASS |
+| Movement ID | 4 | PASS |
+
+### STOCK_OUT Test
+
+| Field | Actual Result | Status |
+|---|---|---|
+| Product | Fresh Milk (ID 1) | PASS |
+| Previous quantity | 21 | PASS |
+| New quantity | 20 | PASS |
+| Quantity change | -1 | PASS |
+| Movement type | STOCK_OUT | PASS |
+| Reason | Stock OUT verification | PASS |
+| Changed by | User ID 1 | PASS |
+| Movement ID | 5 | PASS |
+
+### Verification Result
+
+- Quantity increases were automatically recorded as STOCK_IN.
+- Quantity decreases were automatically recorded as STOCK_OUT.
+- Previous and new quantities were recorded correctly.
+- Quantity differences were calculated correctly.
+- User ID and timestamps were recorded.
+- Original Fresh Milk quantity was restored to 20.
+
+**Overall Result:** Stock Movement Log testing PASSED for both stock increases and decreases.
+
+**Implementation Note:** Accurate actor attribution and movement reasons depend on the application setting the database session variables `@freshfirst_actor_user_id` and `@freshfirst_movement_reason`.
+

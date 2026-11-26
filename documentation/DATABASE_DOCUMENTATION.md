@@ -582,3 +582,69 @@ This update supersedes earlier status statements where they conflict with the cu
 - The restoration comparison confirmed matching table counts, row counts, foreign-key counts, trigger counts, procedure counts, CHECK constraints, UNIQUE constraints, InnoDB tables and index counts.
 - Actor attribution still depends on the application setting the database session variable.
 - The faculty-approved query response-time target remains pending.
+
+# Current Database Update – 26 November 2026
+
+## Stock Movement Log
+
+A Stock Movement Log feature was added to maintain an automatic record of product quantity changes.
+
+### 1. New Database Table
+
+Table name: `stock_movements`
+
+| Column | Purpose |
+|---|---|
+| movement_id | Primary key |
+| product_id | References products |
+| previous_quantity | Quantity before update |
+| new_quantity | Quantity after update |
+| quantity_change | Difference in quantity |
+| movement_type | STOCK_IN or STOCK_OUT |
+| reason | Reason for the movement |
+| changed_by | References users |
+| changed_at | Movement timestamp |
+
+### 2. Database Integrity
+
+- Product reference is protected by a foreign key.
+- User reference is protected by a foreign key.
+- Product and date indexes support movement-history queries.
+- The table uses the InnoDB storage engine.
+
+### 3. Automatic Movement Trigger
+
+Trigger: `trg_stock_movement_after_update`
+
+Event: AFTER UPDATE ON products.
+
+The trigger automatically inserts a movement record when the product quantity changes.
+
+- Quantity increase: STOCK_IN.
+- Quantity decrease: STOCK_OUT.
+- Unchanged quantity: no movement record.
+
+### 4. Testing Results – 26 November 2026
+
+| Test | Result |
+|---|---|
+| STOCK_IN: 20 to 21 | PASS |
+| STOCK_OUT: 21 to 20 | PASS |
+| Previous quantity tracking | PASS |
+| New quantity tracking | PASS |
+| Quantity difference calculation | PASS |
+| User ID recording | PASS |
+| Timestamp recording | PASS |
+
+### 5. Application Integration Limitation
+
+Accurate actor attribution and movement reasons depend on the application setting:
+
+- `@freshfirst_actor_user_id`
+- `@freshfirst_movement_reason`
+
+Application-level integration and testing remain pending.
+
+**Overall Result:** The Stock Movement Log table and automatic quantity-change trigger were successfully tested at the database level.
+
+Migration file: `database/stock_movement_log_migration.sql`

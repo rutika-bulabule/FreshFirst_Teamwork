@@ -6,3 +6,5 @@ verify_password_hashes.py
 database/freshfirst_team_private_backup_*.sql
 
 database/freshfirst_team_schema_only.sql
+
+database/freshfirst_team_backup_*.sql
