@@ -167,7 +167,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 ## Non-Functional Requirements
 
-- DB-NFR-01: All seven database tables must use InnoDB.
+- DB-NFR-01: All eight database tables must use InnoDB.
 - DB-NFR-02: Invalid foreign-key references must be rejected.
 - DB-NFR-03: Product quantity must be greater than zero.
 - DB-NFR-04: Usernames and category names must be unique.
@@ -220,7 +220,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 | Requirement ID | Requirement | Database Component | Testing Evidence | Status |
 |---|---|---|---|---|
-| DB-NFR-01 | All seven database tables must use InnoDB | Seven database tables | Section 8 and Final Database Integrity Verification | PASS |
+| DB-NFR-01 | All eight database tables must use InnoDB | Eight database tables | Section 8 and Final Database Integrity Verification | PASS |
 | DB-NFR-02 | Invalid foreign-key references must be rejected | Foreign keys | Section 4 – Constraint Testing | PASS |
 | DB-NFR-03 | Product quantity must be greater than zero | CHECK constraint | CHECK Constraint Negative Testing | PASS |
 | DB-NFR-04 | Usernames and category names must be unique | UNIQUE constraints | Duplicate category and duplicate username rejection tested | PASS |
