@@ -473,3 +473,25 @@ The following four query execution plans were checked using MySQL EXPLAIN.
 **Evidence result:** All four tested queries used indexes.
 
 **Limitation:** DB-NFR-07 remains PARTIAL because a formal faculty-approved query response-time target has not yet been established. Index usage alone does not establish that a response-time target has been met.
+
+## 16. Final Database Object Inventory – 27 November 2026
+
+The latest complete database export was generated with tables, triggers, stored procedures and events included.
+
+| Database Object | Count |
+|---|---:|
+| Tables | 8 |
+| Triggers | 11 |
+| Stored Procedures | 3 |
+| Foreign Keys | 12 |
+
+The stock movement audit implementation includes:
+- `stock_movements` table
+- `trg_stock_movement_after_update` trigger
+- `sp_update_product_quantity_with_audit` stored procedure
+
+The stored procedure validates the product, quantity, actor and reason before updating stock. The trigger records the stock movement with the validated actor and reason.
+
+**Export Result: PASS – Complete export generated and required audit objects confirmed present.**
+
+**Note:** A fresh restoration test of this latest export has not yet been performed. Historical restoration results above refer to their original test runs.

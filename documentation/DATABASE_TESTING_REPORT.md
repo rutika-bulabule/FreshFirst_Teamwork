@@ -504,3 +504,25 @@ All eight table checksums matched. Table counts, record counts, trigger counts, 
 
 The test confirms matching table data and reported structure counts. It does not independently verify the complete textual definitions of every database object.
 
+
+## 16. Final Database Object Inventory – 27 November 2026
+
+The latest complete database export was generated with tables, triggers, stored procedures and events included.
+
+| Database Object | Count |
+|---|---:|
+| Tables | 8 |
+| Triggers | 11 |
+| Stored Procedures | 3 |
+| Foreign Keys | 12 |
+
+The stock movement audit implementation includes:
+- `stock_movements` table
+- `trg_stock_movement_after_update` trigger
+- `sp_update_product_quantity_with_audit` stored procedure
+
+The stored procedure validates the product, quantity, actor and reason before updating stock. The trigger records the stock movement with the validated actor and reason.
+
+**Export Result: PASS – Complete export generated and required audit objects confirmed present.**
+
+**Note:** A fresh restoration test of this latest export has not yet been performed. Historical restoration results above refer to their original test runs.
