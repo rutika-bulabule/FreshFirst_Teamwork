@@ -96,7 +96,7 @@ Stores action creation and status-change audit records.
 - Primary keys and foreign keys
 - Unique constraints
 - Database indexes for efficient data retrieval
-- Ten triggers covering product history, action lifecycle auditing and history protection.
+- Eleven triggers covering product history, action lifecycle auditing, history protection and stock movement auditing.
 - Stored procedure: verify_product (expiry and storage condition verification)
 - Stored procedure: verify_product_temperature (actual temperature verification and result recording)
 - History update and delete protection
@@ -109,8 +109,7 @@ Stores action creation and status-change audit records.
 - 1 history record
 
 ## Important Note
-Secure Werkzeug scrypt password hashes are stored for all three user accounts as of 22 November 2026.
-The backend developer must replace them with secure password hashes before implementing login.
+The original sample SQL data used temporary password placeholders. On 22 November 2026, secure Werkzeug scrypt password hashes were generated and saved for the ADMIN, MANAGER and STAFF accounts in the live freshfirst_team database. Application login integration testing remains pending.
 
 ## Team Workflow
 Database: Rutika
@@ -162,13 +161,13 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 | DB-FR-07 | Store verification records linked to products and users. |
 | DB-FR-08 | Store follow-up actions, priorities and statuses. |
 | DB-FR-09 | Maintain product activity history. |
-| DB-FR-10 | Support database reports and integrity checks | Database queries, indexes and integrity checks | Product stock, category summary and temporary action reporting tests returned expected results | PASS |
+| DB-FR-10 | Support database reports and integrity checks. |
 | DB-FR-11 | Protect history against normal update and deletion. |
 | DB-FR-12 | Maintain consistency using constraints and transactions. |
 
 ## Non-Functional Requirements
 
-- DB-NFR-01: All seven database tables must use InnoDB.
+- DB-NFR-01: All eight database tables must use InnoDB.
 - DB-NFR-02: Invalid foreign-key references must be rejected.
 - DB-NFR-03: Product quantity must be greater than zero.
 - DB-NFR-04: Usernames and category names must be unique.
@@ -178,7 +177,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 ## Acceptance Criteria
 
-1. All seven tables exist and use InnoDB.
+1. All eight tables exist and use InnoDB.
 2. Every table has a primary key.
 3. Invalid foreign-key references are rejected.
 4. Duplicate usernames and category names are rejected.
@@ -221,12 +220,12 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 | Requirement ID | Requirement | Database Component | Testing Evidence | Status |
 |---|---|---|---|---|
-| DB-NFR-01 | All seven database tables must use InnoDB | Seven database tables | Section 8 and Final Database Integrity Verification | PASS |
+| DB-NFR-01 | All eight database tables must use InnoDB | Eight database tables | Section 8 and Final Database Integrity Verification | PASS |
 | DB-NFR-02 | Invalid foreign-key references must be rejected | Foreign keys | Section 4 – Constraint Testing | PASS |
 | DB-NFR-03 | Product quantity must be greater than zero | CHECK constraint | CHECK Constraint Negative Testing | PASS |
 | DB-NFR-04 | Usernames and category names must be unique | UNIQUE constraints | Duplicate category and duplicate username rejection tested | PASS |
 | DB-NFR-05 | Auditable activities must record the actor and timestamp | history, action_history and triggers | Action Audit Actor Identification Testing | PASS WITH LIMITATION |
-| DB-NFR-06 | Backups and a restoration check must be maintained | MySQL backup | Backup restored successfully into separate test schema; seven tables, ten triggers and two stored procedures verified | PASS |
+| DB-NFR-06 | Backups and a restoration check must be maintained | MySQL backup | Latest isolated restoration verified; 8 tables, 11 triggers, 3 stored procedures, 12 foreign keys and 23 records matched | PASS |
 | DB-NFR-07 | Product-list and summary queries should meet the agreed performance target | Indexes and database queries | NFR-07 query execution and index verification; formal target not established | PARTIAL |
 
 **Note:** PARTIAL indicates that implementation or some supporting evidence exists, but the complete requirement has not yet been demonstrated. Actor attribution also depends on the application-controlled database session variable.
@@ -261,7 +260,7 @@ These are required business rules; they do not mean every transaction type has a
 Each auditable operation should record:
 - Unique history ID.
 - Related product ID.
-- Acting user ID.
+- Acting user ID, where available.
 - Activity or transaction type.
 - Relevant details.
 - Activity timestamp.
@@ -309,12 +308,12 @@ At the 19 November 2026 checkpoint, the password values were temporary placehold
 
 ## Database Conclusion
 
-The FreshFirst Team database provides a relational foundation for perishable stock verification. Its seven InnoDB tables, ten foreign keys, two unique constraints, four CHECK constraints, ten triggers and two stored procedures support database integrity and traceability.
+The FreshFirst Team database provides a relational foundation for perishable stock verification. Its eight InnoDB tables, twelve foreign keys, two unique constraints, four CHECK constraints, eleven triggers and three stored procedures support database integrity and traceability.
 
-Selected structural, functional and transaction tests have been documented. Action lifecycle auditing and its tested controls are documented in the 19 November 2026 verification. Secure password storage was completed and verified on 22 November 2026. Backup restoration was successfully tested on 19 November 2026. Remaining work includes application login integration and further application-level transaction testing.
+Selected structural, functional and transaction tests have been documented. Action lifecycle auditing and its tested controls are documented in the 19 November 2026 verification. Secure password hashes were generated, saved and verified on 22 November 2026. Remaining work includes application login integration and further application-level transaction testing. Backup restoration was successfully tested on 19 November 2026.
 
 
-## Latest Database Verification — 19 November 2026
+## Historical Database Verification — 19 November 2026 (superseded by the 27 November update)
 
 The following figures reflect the current verified database structure. The earlier 18 November verification summary above is retained as a historical checkpoint.
 
@@ -352,20 +351,22 @@ Normal UPDATE and DELETE operations on action_history are prevented by database 
 
 ### Current Trigger Coverage
 
-The database contains 10 triggers covering:
+The database contains 11 triggers covering:
 
 - Product insertion and update history.
 - History update and deletion protection.
 - Action insertion and update validation.
 - Action lifecycle audit logging.
 - Action history update and deletion protection.
+- Automatic stock movement auditing after quantity updates.
 
 ### Current Stored Procedures
 
 1. verify_product
 2. verify_product_temperature
+3. sp_update_product_quantity_with_audit
 
-Both procedures have been tested, including invalid product IDs, invalid user IDs and temperature validation.
+The two verification procedures have been tested, including invalid product IDs, invalid user IDs and temperature validation. The stock quantity audit procedure validates quantity, actor and reason before updating stock.
 
 ### Transaction Verification
 
@@ -395,9 +396,9 @@ A database backup was successfully exported using MySQL Workbench.
 | Stored procedures | Included |
 | Events and triggers | Selected for export |
 | Backup export | SUCCESS |
-| Restoration test | NOT YET TESTED |
+| Restoration test | SUCCESSFUL - 19 November 2026 |
 
-The backup file was verified in the project database folder. Restoration testing remains pending.
+The backup was restored successfully into the separate freshfirst_team_restore_test database. Seven tables, ten triggers and two stored procedures were verified after restoration.
 
 ### NFR-07 – Database Query Performance Verification (19 November 2026)
 
@@ -442,30 +443,36 @@ The following transaction types define the expected effect on stock quantity.
 
 ## Gate 1 – A3: Database Acceptance Criteria
 
-| Requirement | Acceptance criterion | Evidence |
-|---|---|---|
-| User records | Username must be unique and role must be valid. | Unique constraint and role verification |
-| Product records | Product must reference a valid category and have valid quantity. | Foreign keys and CHECK constraints |
-| Expiry verification | Expiry status must be calculated correctly from the expiry date. | Expiry calculation tests |
-| Temperature verification | Storage temperature must be checked against category limits. | Verification procedure tests |
-| Action records | Action status and completion timestamp must remain consistent. | CHECK constraint and trigger tests |
-| History records | Audit history must not be updated or deleted through normal database operations. | History protection trigger tests |
-| Backup | Database backup must restore tables, records, triggers and procedures. | Restoration test |
+The following criteria define the expected database behaviour for each functional requirement. Status reflects the available database evidence; application-level integration is assessed separately.
 
-**Result:** Database acceptance criteria are defined. Application-level authentication and complete end-to-end workflows require separate application testing.
+| Requirement | Acceptance criterion | Testing method / Evidence | Status |
+|---|---|---|---|
+| DB-FR-01 – User accounts and roles | Each username must be unique. Each account must have a valid role, and passwords must be stored as secure hashes rather than plain text. | Unique constraint, role records and password-hash verification. Application login integration remains pending. | PARTIAL |
+| DB-FR-02 – Product records | Product records must store the required product information and maintain valid product data. | Product table inspection, product insertion and record verification tests. | PASS |
+| DB-FR-03 – Product-category relationships | Every product must reference an existing category. Invalid category references must be rejected. | Foreign-key constraint inspection and integrity testing. | PASS |
+| DB-FR-04 – Product insertion and updates | Valid products must be insertable, and permitted quantity updates must preserve database consistency. Invalid quantities must be rejected. | Product insertion, quantity update, CHECK constraint and transaction tests. | PASS |
+| DB-FR-05 – Expiry-date calculations | Expiry status must be calculated correctly using the product expiry date and current date. | DATEDIFF and expiry-status calculation tests for the stored products. | PASS |
+| DB-FR-06 – Temperature verification | A product's recorded storage temperature must be evaluated against its category's permitted temperature limits. | Temperature verification procedure tests, including valid and invalid temperature cases. | PASS |
+| DB-FR-07 – Verification records | Each verification record must reference an existing product and valid verifying user. | Verification procedure tests and foreign-key checks. | PASS |
+| DB-FR-08 – Follow-up actions | Actions must reference valid products and assigned users. Action status and completion timestamp must remain consistent. | Action lifecycle tests, foreign-key checks, CHECK constraints and trigger inspection. | PASS |
+| DB-FR-09 – Product activity history | Auditable product changes must generate history records containing the relevant activity details, actor and timestamp. | Product update trigger test and recorded audit-history evidence. | PASS |
+| DB-FR-10 – Reports and integrity checks | Database queries must return the expected product stock, category summary and action reporting results. | Product stock, category summary and temporary action reporting tests. | PASS |
+| DB-FR-11 – History protection | Normal database operations must not allow protected history records to be updated or deleted. | History protection trigger tests for UPDATE and DELETE. | PASS |
+| DB-FR-12 – Database consistency | Foreign keys, CHECK constraints, unique constraints and transactions must preserve valid database relationships and prevent invalid data. | Constraint tests, InnoDB verification and COMMIT/ROLLBACK tests. | PASS |
 
+**A3 Result:** Acceptance criteria are explicitly defined for all 12 database functional requirements. DB-FR-01 remains PARTIAL because application login integration testing is pending. Complete application-level workflows require separate integration testing.
 ## Gate 1 – A5: Database Requirement Traceability
 
 | Stakeholder need | Requirement | Database evidence |
 |---|---|---|
-| Secure user management | FR-01 | users table, unique username constraint and role records |
-| Product management | FR-02 to FR-04 | products table, category foreign key and integrity constraints |
-| Stock verification | FR-05 to FR-07 | verifications table and verification procedures |
-| Priority and action management | FR-08 | actions table, priority and status constraints, action triggers |
-| Product activity history | FR-09 | history table and product activity triggers |
-| Reporting | FR-10 | Product stock, category summary and action reporting queries |
-| Audit history protection | FR-11 | History protection triggers preventing normal update and deletion |
-| Database consistency | FR-12 | InnoDB, foreign keys, CHECK constraints and transaction testing |
+| Secure user management | DB-FR-01 | users table, unique username constraint and role records |
+| Product management | DB-FR-02 to DB-FR-04 | products table, category foreign key and integrity constraints |
+| Stock verification | DB-FR-05 to DB-FR-07 | verifications table and verification procedures |
+| Priority and action management | DB-FR-08 | actions table, priority and status constraints, action triggers |
+| Product activity history | DB-FR-09 | history table and product activity triggers |
+| Reporting | DB-FR-10 | Product stock, category summary and action reporting queries |
+| Audit history protection | DB-FR-11 | History protection triggers preventing normal update and deletion |
+| Database consistency | DB-FR-12 | InnoDB, foreign keys, CHECK constraints and transaction testing |
 
 **Limitation:** Database evidence establishes the data structures and integrity mechanisms. Complete user-interface and application-level acceptance must be verified during integration.
 
@@ -529,10 +536,117 @@ The following four query execution plans were checked using MySQL EXPLAIN.
 
 **Limitation:** DB-NFR-07 remains PARTIAL because a formal faculty-approved query response-time target has not yet been established. Index usage alone does not establish that a response-time target has been met.
 
+
+
+# Database Completion Update – 22 November 2026
+
+## 1. Secure Password Hashing
+- Password hashes for ADMIN, MANAGER and STAFF accounts were generated using Werkzeug scrypt.
+- Hashes were successfully saved in the `freshfirst_team` database.
+- All three passwords passed Werkzeug `check_password_hash()` verification.
+- Application login integration testing remains a separate validation step.
+
+## 2. Category Image Path Support
+- Added `image_path VARCHAR(255) NULL` to the `categories` table.
+- Saved relative image paths for all four existing categories:
+  - Bakery: `images/categories/bakery.jpg`
+  - Dairy: `images/categories/dairy.jpg`
+  - Fruits: `images/categories/fruits.jpg`
+  - Vegetables: `images/categories/vegetables.jpg`
+- Existing category records, temperature rules and expiry settings were preserved.
+- Actual image files and frontend display integration remain pending with the frontend team.
+
+
+# Current Database Update – 22 November 2026
+
+## Secure Password Hashing
+- ADMIN, MANAGER and STAFF password hashes were generated using Werkzeug scrypt.
+- The hashes were successfully saved in `freshfirst_team`.
+- All three passwords passed Werkzeug `check_password_hash()` verification.
+- Full application login integration testing remains pending.
+
+## Category Image Path Support
+- Added `image_path VARCHAR(255) NULL` to the `categories` table.
+- Bakery: `images/categories/bakery.jpg`
+- Dairy: `images/categories/dairy.jpg`
+- Fruits: `images/categories/fruits.jpg`
+- Vegetables: `images/categories/vegetables.jpg`
+- Existing category temperature rules and expiry settings were preserved.
+- Actual image files and frontend integration remain pending with the frontend team.
+
+This update supersedes earlier status statements where they conflict with the current implementation status. Historical records remain unchanged.
+
 ## Current Database Status Update - 23 November 2026
 
-- Secure Werkzeug scrypt password hashes were generated and verified for all three database accounts on 22 November 2026.
-- Application login integration remains pending.
-- Separate-database restoration testing was completed on 23 November 2026.
-- Actor attribution depends on the application setting the database session variable.
+- Secure Werkzeug scrypt password hashes were generated and verified for the admin, manager1 and staff1 accounts on 22 November 2026.
+- Application-level login integration testing remains pending with the backend.
+- Backup restoration was tested separately using freshfirst_team_restore_test on 23 November 2026.
+- The restoration comparison confirmed matching table counts, row counts, foreign-key counts, trigger counts, procedure counts, CHECK constraints, UNIQUE constraints, InnoDB tables and index counts.
+- Actor attribution still depends on the application setting the database session variable.
 - The faculty-approved query response-time target remains pending.
+
+# Current Database Update – 26 November 2026
+
+## Stock Movement Log
+
+A Stock Movement Log feature was added to maintain an automatic record of product quantity changes.
+
+### 1. New Database Table
+
+Table name: `stock_movements`
+
+| Column | Purpose |
+|---|---|
+| movement_id | Primary key |
+| product_id | References products |
+| previous_quantity | Quantity before update |
+| new_quantity | Quantity after update |
+| quantity_change | Difference in quantity |
+| movement_type | STOCK_IN or STOCK_OUT |
+| reason | Reason for the movement |
+| changed_by | References users |
+| changed_at | Movement timestamp |
+
+### 2. Database Integrity
+
+- Product reference is protected by a foreign key.
+- User reference is protected by a foreign key.
+- Product and date indexes support movement-history queries.
+- The table uses the InnoDB storage engine.
+
+### 3. Automatic Movement Trigger
+
+Trigger: `trg_stock_movement_after_update`
+
+Event: AFTER UPDATE ON products.
+
+The trigger automatically inserts a movement record when the product quantity changes.
+
+- Quantity increase: STOCK_IN.
+- Quantity decrease: STOCK_OUT.
+- Unchanged quantity: no movement record.
+
+### 4. Testing Results – 26 November 2026
+
+| Test | Result |
+|---|---|
+| STOCK_IN: 20 to 21 | PASS |
+| STOCK_OUT: 21 to 20 | PASS |
+| Previous quantity tracking | PASS |
+| New quantity tracking | PASS |
+| Quantity difference calculation | PASS |
+| User ID recording | PASS |
+| Timestamp recording | PASS |
+
+### 5. Application Integration Limitation
+
+Accurate actor attribution and movement reasons depend on the application setting:
+
+- `@freshfirst_actor_user_id`
+- `@freshfirst_movement_reason`
+
+Application-level integration and testing remain pending.
+
+**Overall Result:** The Stock Movement Log table and automatic quantity-change trigger were successfully tested at the database level.
+
+Migration file: `database/stock_movement_log_migration.sql`

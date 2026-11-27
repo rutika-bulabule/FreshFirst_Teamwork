@@ -1,8 +1,8 @@
 # Gate 1 – B2: Database Integrity Rules
 
-**Project:** FreshFirst – Perishable Stock Verification Register  
-**Engine:** Database / Data & Integrity  
-**Database:** freshfirst_team  
+**Project:** FreshFirst – Perishable Stock Verification Register
+**Engine:** Database / Data & Integrity
+**Database:** freshfirst_team
 **DBMS:** MySQL 9.1.0
 
 ## 1. Purpose
@@ -37,6 +37,8 @@ The database enforces these relationships through foreign keys:
 | products | created_by | users |
 | verifications | product_id | products |
 | verifications | verified_by | users |
+| stock_movements | product_id | products |
+| stock_movements | changed_by | users |
 
 These constraints prevent invalid references to missing parent records.
 
@@ -59,21 +61,23 @@ The database also contains triggers that:
 - Clear completed_at when an action is not DONE.
 - Record product insertion and update events.
 - Record action creation and status-change events.
+- Record stock quantity changes in stock_movements through the stock movement audit trigger.
 
 ## 6. Verified Database Integrity Evidence
 
 | Database Feature | Verified Count |
 |---|---:|
-| InnoDB tables | 7 |
+| InnoDB tables | 8 |
 | CHECK constraints | 4 |
 | UNIQUE constraints | 2 |
-| Foreign-key constraints | 10 |
-| Triggers | 10 |
-| Stored procedures | 2 |
+| Foreign-key constraints | 12 |
+| Triggers | 11 |
+| Stored procedures | 3 |
 
 Stored procedures:
 1. verify_product
 2. verify_product_temperature
+3. sp_update_product_quantity_with_audit
 
 ## 7. Evidence Limitations
 

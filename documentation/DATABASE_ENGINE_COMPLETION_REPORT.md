@@ -1,21 +1,21 @@
 # FreshFirst Team – Database Engine Completion Report
 
-**Project:** Perishable Stock Verification Register  
-**Engine:** Database / Data & Integrity  
+**Project:** Perishable Stock Verification Register
+**Engine:** Database / Data & Integrity
 **Responsible Member:** Rutika
 
 ## 1. Completed Database Work
 
 | Area | Completed work | Status |
 |---|---|---|
-| Database structure | Seven InnoDB tables | PASS |
-| Primary keys | Seven primary keys | PASS |
-| Foreign keys | Ten foreign keys | PASS |
+| Database structure | Eight InnoDB tables | PASS |
+| Primary keys | Eight primary keys | PASS |
+| Foreign keys | Twelve foreign keys | PASS |
 | Unique constraints | Two UNIQUE constraints | PASS |
 | CHECK constraints | Four CHECK constraints | PASS |
 | Indexes | 24 indexes | PASS |
-| Triggers | Ten triggers | PASS |
-| Stored procedures | Two procedures | PASS |
+| Triggers | Eleven triggers | PASS |
+| Stored procedures | Three procedures | PASS |
 | Verification | Expiry and temperature verification | PASS |
 | Audit history | History protection and audit testing | PASS |
 | Product and category reporting | Queries executed and results reviewed | PASS |
@@ -76,4 +76,4 @@ Secure password hashing and Werkzeug verification are complete. Full application
 
 ## Git Submission Status - 23 November 2026
 
-Database documentation and supporting SQL files are undergoing final review in the local project repository. Final staging, commit and push are pending. Private backups and password-generation or verification scripts are excluded from the submission.
+Database documentation and supporting SQL files are undergoing final local review as of 27 November 2026. The latest review updates have not yet been committed or pushed. Private backups and password-generation or verification scripts are excluded from the submission.

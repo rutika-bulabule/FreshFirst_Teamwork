@@ -27,7 +27,8 @@ Database development and database evidence preparation completed. Frontend and b
 4. verifications
 5. actions
 6. history
-
+7. action_history
+8. stock_movements
 ## Frontend Instructions
 
 - Develop the user interface using HTML, CSS and JavaScript.
@@ -44,7 +45,7 @@ Database development and database evidence preparation completed. Frontend and b
 
 ## Security Note
 
-The sample password hashes are temporary placeholders. Secure password hashing must be implemented by the Backend developer.
+Secure Werkzeug scrypt password hashes have been generated and verified for the existing user accounts. Full application login integration testing remains pending with the Backend team.
 
 ## Team Workflow
 
