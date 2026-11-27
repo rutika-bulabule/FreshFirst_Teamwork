@@ -96,7 +96,7 @@ Stores action creation and status-change audit records.
 - Primary keys and foreign keys
 - Unique constraints
 - Database indexes for efficient data retrieval
-- Ten triggers covering product history, action lifecycle auditing and history protection.
+- Eleven triggers covering product history, action lifecycle auditing, history protection and stock movement auditing.
 - Stored procedure: verify_product (expiry and storage condition verification)
 - Stored procedure: verify_product_temperature (actual temperature verification and result recording)
 - History update and delete protection
@@ -177,7 +177,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 
 ## Acceptance Criteria
 
-1. All seven tables exist and use InnoDB.
+1. All eight tables exist and use InnoDB.
 2. Every table has a primary key.
 3. Invalid foreign-key references are rejected.
 4. Duplicate usernames and category names are rejected.
@@ -225,7 +225,7 @@ MySQL 9.1.0 supports relational tables, constraints, transactions, triggers, sto
 | DB-NFR-03 | Product quantity must be greater than zero | CHECK constraint | CHECK Constraint Negative Testing | PASS |
 | DB-NFR-04 | Usernames and category names must be unique | UNIQUE constraints | Duplicate category and duplicate username rejection tested | PASS |
 | DB-NFR-05 | Auditable activities must record the actor and timestamp | history, action_history and triggers | Action Audit Actor Identification Testing | PASS WITH LIMITATION |
-| DB-NFR-06 | Backups and a restoration check must be maintained | MySQL backup | Backup restored successfully into separate test schema; seven tables, ten triggers and two stored procedures verified | PASS |
+| DB-NFR-06 | Backups and a restoration check must be maintained | MySQL backup | Latest isolated restoration verified; 8 tables, 11 triggers, 3 stored procedures, 12 foreign keys and 23 records matched | PASS |
 | DB-NFR-07 | Product-list and summary queries should meet the agreed performance target | Indexes and database queries | NFR-07 query execution and index verification; formal target not established | PARTIAL |
 
 **Note:** PARTIAL indicates that implementation or some supporting evidence exists, but the complete requirement has not yet been demonstrated. Actor attribution also depends on the application-controlled database session variable.
@@ -308,7 +308,7 @@ At the 19 November 2026 checkpoint, the password values were temporary placehold
 
 ## Database Conclusion
 
-The FreshFirst Team database provides a relational foundation for perishable stock verification. Its seven InnoDB tables, ten foreign keys, two unique constraints, four CHECK constraints, ten triggers and two stored procedures support database integrity and traceability.
+The FreshFirst Team database provides a relational foundation for perishable stock verification. Its eight InnoDB tables, twelve foreign keys, two unique constraints, four CHECK constraints, eleven triggers and three stored procedures support database integrity and traceability.
 
 Selected structural, functional and transaction tests have been documented. Action lifecycle auditing and its tested controls are documented in the 19 November 2026 verification. Secure password hashes were generated, saved and verified on 22 November 2026. Remaining work includes application login integration and further application-level transaction testing. Backup restoration was successfully tested on 19 November 2026.
 
@@ -351,20 +351,22 @@ Normal UPDATE and DELETE operations on action_history are prevented by database 
 
 ### Current Trigger Coverage
 
-The database contains 10 triggers covering:
+The database contains 11 triggers covering:
 
 - Product insertion and update history.
 - History update and deletion protection.
 - Action insertion and update validation.
 - Action lifecycle audit logging.
 - Action history update and deletion protection.
+- Automatic stock movement auditing after quantity updates.
 
 ### Current Stored Procedures
 
 1. verify_product
 2. verify_product_temperature
+3. sp_update_product_quantity_with_audit
 
-Both procedures have been tested, including invalid product IDs, invalid user IDs and temperature validation.
+The two verification procedures have been tested, including invalid product IDs, invalid user IDs and temperature validation. The stock quantity audit procedure validates quantity, actor and reason before updating stock.
 
 ### Transaction Verification
 
