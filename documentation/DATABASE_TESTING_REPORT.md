@@ -365,13 +365,13 @@ A read-only query was executed to verify the existing user accounts and assigned
 
 ## 15. Final Conclusion
 
-The final FreshFirst Team database contains seven InnoDB tables, ten foreign keys, two unique constraints, four check constraints, ten triggers and two stored procedures.
+The current FreshFirst Team database contains eight InnoDB tables, twelve foreign keys, two unique constraints, four check constraints, eleven triggers and three stored procedures.
 
 The initial stored procedure and trigger tests passed. Action lifecycle management, automatic completion timestamps, audit event generation, audit update/delete protection, actor identification testing and transaction rollback were also reported as successful.
 
 Database backup restoration was successfully tested using the separate `freshfirst_team_restore_test` database.
 
-The remaining limitations relating to secure password hashes, application-controlled actor attribution, performance benchmarking and physical stock verification are documented honestly.
+The remaining limitations relating to application login integration, application-controlled actor attribution, performance benchmarking and physical stock verification are documented honestly.
 
 **Overall Result:** The final database structure and the documented database integrity, action audit and restoration tests were verified successfully.
 
