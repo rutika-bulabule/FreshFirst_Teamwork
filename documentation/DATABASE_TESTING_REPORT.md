@@ -525,4 +525,42 @@ The stored procedure validates the product, quantity, actor and reason before up
 
 **Export Result: PASS – Complete export generated and required audit objects confirmed present.**
 
-**Note:** A fresh restoration test of this latest export has not yet been performed. Historical restoration results above refer to their original test runs.
+**Note:** The latest export was subsequently restored and verified in a separate database. See Section 17 for the 27 November 2026 restoration results.
+
+## 17. Final Isolated Restoration Test – 27 November 2026
+
+The corrected `freshfirst_team_restore_test.sql` file was imported into a new, separate database named `freshfirst_team_restore_check_20261127`. The original `freshfirst_team` database was not modified.
+
+### Database Structure Verification
+
+| Database Object | Expected | Restored | Result |
+|---|---:|---:|---|
+| Tables | 8 | 8 | PASS |
+| Triggers | 11 | 11 | PASS |
+| Stored Procedures | 3 | 3 | PASS |
+| Foreign Keys | 12 | 12 | PASS |
+
+### Record Count Comparison
+
+| Table | Original | Restored | Result |
+|---|---:|---:|---|
+| users | 3 | 3 | PASS |
+| products | 5 | 5 | PASS |
+| categories | 4 | 4 | PASS |
+| verifications | 1 | 1 | PASS |
+| history | 8 | 8 | PASS |
+| actions | 0 | 0 | PASS |
+| action_history | 0 | 0 | PASS |
+| stock_movements | 2 | 2 | PASS |
+| **Total** | **23** | **23** | **PASS** |
+
+### Restoration Result
+
+- All eight expected tables were present.
+- All eleven triggers were present.
+- All three stored procedures were present.
+- All twelve foreign keys were present.
+- Record counts matched across all eight tables.
+- The original database remained separate from the restoration test database.
+
+**Overall Result: PASS – The corrected backup was successfully restored and its database structure and table record counts were verified.**
