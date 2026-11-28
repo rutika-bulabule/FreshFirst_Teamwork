@@ -650,3 +650,245 @@ Application-level integration and testing remain pending.
 **Overall Result:** The Stock Movement Log table and automatic quantity-change trigger were successfully tested at the database level.
 
 Migration file: `database/stock_movement_log_migration.sql`
+
+## Latest Database Status – 27 November 2026
+
+The latest verified FreshFirst Team database contains:
+
+| Database Object | Verified Count |
+|---|---:|
+| Tables | 8 |
+| InnoDB tables | 8 |
+| Primary keys | 8 |
+| Foreign keys | 12 |
+| Unique constraints | 2 |
+| CHECK constraints | 4 |
+| Triggers | 11 |
+| Stored procedures | 3 |
+| Records across all tables | 23 |
+
+### Current Stored Procedures
+
+1. `verify_product` – Checks product expiry and storage conditions.
+2. `verify_product_temperature` – Validates recorded temperature and saves verification results.
+3. `sp_update_product_quantity_with_audit` – Updates stock quantity and records stock movement details.
+
+### Audit Protection
+
+- History records cannot be updated or deleted through normal SQL operations.
+- Action audit records cannot be updated or deleted through normal SQL operations.
+- Action creation and status changes generate audit records.
+- Stock quantity updates are recorded through the stock movement audit mechanism.
+
+### Verification Status
+
+The latest database structure, constraints, procedures, triggers and record counts were verified. The original database retained its 23 records after isolated procedure and trigger testing.
+
+**Note:** Application-level actor attribution depends on correctly setting database session variables. Physical stock accuracy depends on staff stock counts. Formal query-performance targets still require confirmation.
+
+---
+
+# DATABASE IMPLEMENTATION UPDATE
+**Date:** 28 November 2026
+**Database:** freshfirst_team
+**DBMS:** MySQL 9.1.0
+**Storage Engine:** InnoDB
+
+## 1. Current Database Structure
+
+The current database contains 11 InnoDB tables:
+
+1. users
+2. categories
+3. products
+4. verifications
+5. history
+6. actions
+7. action_history
+8. stock_movements
+9. customers
+10. sales
+11. sale_items
+
+## 2. Product Pricing
+
+The products table now includes:
+
+| Column | Data Type | Description |
+|---|---|---|
+| unit_price | DECIMAL(10,2) | Product selling price; NULL is permitted |
+
+Current product records:
+
+| Product | Quantity | Unit Price |
+|---|---:|---|
+| Fresh Milk | 20 | NULL |
+| Apple | 30 | NULL |
+| Banana | 25 | NULL |
+| Carrot | 15 | NULL |
+| Bread | 20 | NULL |
+
+Actual product prices have not yet been entered. No sample price has been treated as a real product price.
+
+## 3. Customer and Sales Management
+
+Three relational tables have been added.
+
+### customers
+Stores customer information:
+- customer_id
+- customer_name
+- phone
+- created_at
+
+### sales
+Stores customer sales:
+- sale_id
+- customer_id
+- sale_date
+- sale_status
+
+### sale_items
+Stores individual products in a sale:
+- sale_item_id
+- sale_id
+- product_id
+- quantity
+- unit_price
+- line_total
+
+The line_total column is generated using:
+
+quantity * unit_price
+
+Constraints enforce positive sale quantities and non-negative unit prices.
+
+## 4. Stored Procedures
+
+The current database contains 18 stored procedures.
+
+| No. | Procedure |
+|---:|---|
+| 1 | sp_category_stock_report |
+| 2 | sp_customer_purchase_report |
+| 3 | sp_customer_register_report |
+| 4 | sp_daily_sales_report |
+| 5 | sp_expired_products_report |
+| 6 | sp_expiring_products_report |
+| 7 | sp_expiry_status_summary |
+| 8 | sp_low_stock_report |
+| 9 | sp_product_valuation_report |
+| 10 | sp_record_sale |
+| 11 | sp_sales_detail_report |
+| 12 | sp_sales_summary |
+| 13 | sp_search_products |
+| 14 | sp_stock_movement_report |
+| 15 | sp_stock_movement_summary |
+| 16 | sp_update_product_quantity_with_audit |
+| 17 | verify_product |
+| 18 | verify_product_temperature |
+
+These procedures support stock reporting, expiry monitoring, product searching, sales recording, customer reporting and stock movement analysis.
+
+## 5. Sales Transaction Procedure
+
+The procedure sp_record_sale supports recording a product sale.
+
+It performs the following operations:
+
+1. Validates the requested quantity.
+2. Validates the unit price.
+3. Checks the actor user ID.
+4. Checks product availability.
+5. Prevents sales exceeding available stock.
+6. Creates a sales record.
+7. Creates a sale item.
+8. Updates product quantity.
+9. Records the stock movement through the existing trigger.
+10. Commits the transaction.
+
+If an SQL exception occurs, the procedure rolls back the transaction.
+
+The procedure currently records one product per invocation.
+
+## 6. Database Integrity Components
+
+Latest verified structural counts:
+
+| Component | Count |
+|---|---:|
+| InnoDB tables | 11 |
+| Stored procedures | 18 |
+| Triggers | 11 |
+| Foreign keys | 15 |
+| CHECK constraints | 6 |
+| UNIQUE constraints | 2 |
+| Indexes | 34 |
+
+## 7. Database Integrity Verification
+
+The following checks were successfully completed:
+
+- All 11 tables use InnoDB.
+- All 18 stored procedures are present.
+- All 11 triggers are present.
+- All 15 foreign keys are present.
+- All 6 CHECK constraints are present.
+- Both UNIQUE constraints are present.
+- 34 indexes were identified.
+- Orphan product records: 0.
+- Orphan product-user references: 0.
+- Orphan sale items: 0.
+- Orphan stock movements: 0.
+- Duplicate usernames: 0.
+- Duplicate category names: 0.
+- Products with non-positive quantities: 0.
+- Sale items with invalid quantities or prices: 0.
+
+## 8. Expiry Monitoring
+
+The database includes separate reports for:
+
+- Expired products.
+- Products approaching expiry.
+- Expiry status summaries.
+
+The current sample product records are expired as of 28 November 2026. These records have not been changed during the structural verification.
+
+## 9. Backup
+
+The latest database export is:
+
+database/freshfirst_team_current.sql
+
+The backup was generated using mysqldump with:
+
+- --single-transaction
+- --routines
+- --triggers
+
+Backup verification confirmed:
+
+| Object | Backup Count |
+|---|---:|
+| Tables | 11 |
+| Stored procedures | 18 |
+| Triggers | 11 |
+
+Backup file size at verification: 59,059 bytes.
+
+## 10. Sales Data Status
+
+The live database has the customer and sales tables, but no real customer or sales transactions have been entered.
+
+Sales procedure testing was performed separately in the test database freshfirst_team_test.
+
+The temporary test transaction used a test price of 10.00. This is not an actual product price.
+
+## 11. Current Status
+
+The database structure, stored procedures, triggers, constraints, indexes and backup have been verified.
+
+Actual product prices and real customer sales data remain pending.
+
+This implementation update supplements the historical database documentation. Earlier records and Gate 0 and Gate 1 content are preserved.

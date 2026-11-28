@@ -564,3 +564,275 @@ The corrected `freshfirst_team_restore_test.sql` file was imported into a new, s
 - The original database remained separate from the restoration test database.
 
 **Overall Result: PASS – The corrected backup was successfully restored and its database structure and table record counts were verified.**
+
+## 18. Additional Procedure and Trigger Validation – 27 November 2026
+
+Additional tests were performed using the isolated database `freshfirst_team_procedure_test_20261127`. The original database was not used for these test modifications.
+
+### Stored Procedure Tests
+
+| Test | Expected Result | Actual Result |
+|---|---|---|
+| Valid stock quantity update | Quantity updated and movement recorded | PASS |
+| Zero quantity | Rejected | PASS |
+| Blank movement reason | Rejected | PASS |
+| Invalid actor ID | Rejected | PASS |
+| Invalid product ID | Rejected | PASS |
+| Valid temperature verification | SAFE result saved | PASS |
+| Out-of-range temperature | UNSAFE result saved | PASS |
+| Invalid verifier ID | Rejected | PASS |
+| NULL temperature | Rejected | PASS |
+| Product verification | Correct expiry-based status returned | PASS |
+| Read-only verification | No records changed | PASS |
+
+### Action Audit Trigger Tests
+
+| Test | Expected Result | Actual Result |
+|---|---|---|
+| Create action | ACTION_CREATED audit entry generated | PASS |
+| Change PENDING to IN_PROGRESS | STATUS_CHANGED entry generated | PASS |
+| Change IN_PROGRESS to DONE | STATUS_CHANGED entry generated | PASS |
+| Complete action | Completion timestamp generated | PASS |
+| Update action audit record | Rejected | PASS |
+| Delete action audit record | Rejected | PASS |
+| Update history record | Rejected | PASS |
+| Delete history record | Rejected | PASS |
+
+### Original Database Protection Check
+
+After the isolated tests, the original `freshfirst_team` database was checked again.
+
+| Table | Original Record Count |
+|---|---:|
+| users | 3 |
+| categories | 4 |
+| products | 5 |
+| verifications | 1 |
+| actions | 0 |
+| history | 8 |
+| action_history | 0 |
+| stock_movements | 2 |
+| **Total** | **23** |
+
+| Database Object | Verified Count |
+|---|---:|
+| Triggers | 11 |
+| Stored procedures | 3 |
+
+**Overall Result: PASS – All listed additional procedure and trigger tests produced their expected results. The original database remained unchanged.**
+
+**Testing Scope:** These tests validate the listed database operations. They do not establish that every possible application workflow or security scenario has been tested.
+
+---
+
+# DATABASE TESTING UPDATE
+**Testing Date:** 28 November 2026
+**Database:** freshfirst_team
+**MySQL Version:** 9.1.0
+
+## 1. Structural Verification
+
+| Test | Expected Result | Actual Result | Status |
+|---|---|---|---|
+| Table count | 11 | 11 | PASS |
+| Table storage engine | InnoDB | All 11 InnoDB | PASS |
+| Stored procedure count | 18 | 18 | PASS |
+| Trigger count | 11 | 11 | PASS |
+| Foreign key count | 15 | 15 | PASS |
+| CHECK constraint count | 6 | 6 | PASS |
+| UNIQUE constraint count | 2 | 2 | PASS |
+| Index count | 34 | 34 | PASS |
+
+## 2. Foreign Key Verification
+
+All 15 foreign keys were found in INFORMATION_SCHEMA.
+
+Relationships include:
+
+- products to categories and users
+- verifications to products and users
+- actions to products and users
+- history to products and users
+- action_history to actions and users
+- customers to sales
+- sales to customers
+- sale_items to sales and products
+- stock_movements to products and users
+
+**Result: PASS**
+
+## 3. CHECK Constraint Verification
+
+Six CHECK constraints were verified:
+
+1. Action completion timestamp consistency.
+2. Minimum storage temperature must not exceed maximum temperature.
+3. Near-expiry days must not be negative.
+4. Product quantity must be positive.
+5. Sale item quantity must be positive.
+6. Sale item unit price must not be negative.
+
+**Result: PASS**
+
+## 4. UNIQUE Constraint Verification
+
+Two UNIQUE constraints were verified:
+
+- categories.category_name
+- users.username
+
+**Result: PASS**
+
+## 5. Orphan Record Testing
+
+| Test | Actual Result | Status |
+|---|---:|---|
+| Orphan products | 0 | PASS |
+| Orphan product users | 0 | PASS |
+| Orphan sale items | 0 | PASS |
+| Orphan stock movements | 0 | PASS |
+
+## 6. Duplicate and Quantity Validation
+
+The following queries were executed:
+
+- Duplicate username check.
+- Duplicate category name check.
+- Non-positive product quantity check.
+- Invalid sale quantity check.
+- Negative sale unit price check.
+
+No matching invalid records were returned.
+
+**Result: PASS**
+
+## 7. Stock Movement Summary Procedure
+
+Procedure tested:
+
+sp_stock_movement_summary
+
+Actual result:
+
+| Movement Type | Total Movements | Total Quantity Moved |
+|---|---:|---:|
+| STOCK_IN | 1 | 1 |
+| STOCK_OUT | 1 | 1 |
+
+The procedure correctly grouped movements by movement type and calculated total quantities.
+
+**Result: PASS**
+
+## 8. Sales Procedure Testing
+
+Procedure tested:
+
+sp_record_sale
+
+Testing was performed in the separate database:
+
+freshfirst_team_test
+
+The test database was used to avoid creating artificial sales in the live database.
+
+| Test Case | Expected Result | Actual Result | Status |
+|---|---|---|---|
+| Valid sale | Sale recorded | Successful | PASS |
+| Quantity zero | Reject sale | Rejected | PASS |
+| Insufficient stock | Reject sale | Rejected | PASS |
+| Failed transaction | Roll back changes | Verified | PASS |
+| Stock movement | Record stock decrease | Verified | PASS |
+
+The successful test used one unit at a temporary test price of 10.00.
+
+This test price is not an actual catalogue price.
+
+The live database was not used for these test transactions.
+
+## 9. Sales Summary Procedures
+
+The following procedures were created and verified:
+
+- sp_sales_summary
+- sp_daily_sales_report
+- sp_sales_detail_report
+- sp_customer_purchase_report
+- sp_customer_register_report
+
+The live database currently contains no real sales or customer records. Empty report results are therefore expected.
+
+## 10. Product and Inventory Reporting
+
+The following procedures were verified:
+
+- sp_low_stock_report
+- sp_expiring_products_report
+- sp_expired_products_report
+- sp_expiry_status_summary
+- sp_product_valuation_report
+- sp_category_stock_report
+- sp_stock_movement_report
+- sp_search_products
+
+The low-stock report returned:
+
+| Product | Quantity | Status |
+|---|---:|---|
+| Carrot | 15 | LOW STOCK |
+| Fresh Milk | 20 | LOW STOCK |
+| Bread | 20 | LOW STOCK |
+
+The product valuation report correctly identified five products without entered prices.
+
+No artificial product prices were inserted.
+
+## 11. Backup Verification
+
+Backup file:
+
+database/freshfirst_team_current.sql
+
+Backup file size:
+
+59,059 bytes.
+
+Verified backup contents:
+
+| Component | Count |
+|---|---:|
+| Tables | 11 |
+| Stored procedures | 18 |
+| Triggers | 11 |
+
+**Result: PASS**
+
+This verifies the presence of the database objects in the export. A fresh restoration test of this latest export has not yet been performed.
+
+## 12. Final Testing Summary
+
+| Component | Result |
+|---|---|
+| Database structure | PASS |
+| InnoDB verification | PASS |
+| Stored procedures | PASS |
+| Triggers | PASS |
+| Foreign keys | PASS |
+| CHECK constraints | PASS |
+| UNIQUE constraints | PASS |
+| Index verification | PASS |
+| Orphan record checks | PASS |
+| Duplicate record checks | PASS |
+| Quantity validation | PASS |
+| Stock movement summary | PASS |
+| Sales procedure tests | PASS in separate test database |
+| Backup object verification | PASS |
+
+## 13. Remaining Limitations
+
+1. Actual product prices have not yet been entered.
+2. Real customer and sales records have not yet been entered.
+3. The latest backup has not yet undergone a fresh restoration test.
+4. Application-level integration testing remains separate from these database tests.
+5. Physical inventory quantities require confirmation by the responsible staff.
+
+This update records the database verification completed on 28 November 2026. Earlier historical test results remain preserved.
